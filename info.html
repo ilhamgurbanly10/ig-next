@@ -8,13 +8,158 @@ Amma yenede state de data saxlamaq useEffect ile data cekmek olar, amma yaxsi bi
 Sayt: https://nextjs.org
 https://nextjs.org/docs/getting-started
 Yukleme: npx create-next-app@latest
+Proyek adini sonra sorusur ozu bu kommandi atdiqdan sonra
 
 Acmaq: npm run dev
 
 Esas ozellikleri routing ve data fetch olmalidir
 
+Next js layihesinin admin paneli React ile yigilarsa daha yaxsi olar, cunki burada nexte
+ehtiyac yoxdur.
 
-2) Pages - 
+2) Pages ve ya Routing - 
+
+Meselen about faylina gedir, bu halda about qovluqu yaradub, onun icerisine bir index.js
+atiriq ve bu linkde about yazdiqda bu sehifeye getmesine komek olur.Amma qovluq 
+yaratmadan birbasa about.js de yaza bilersen 
+
+pagesin icerisinde ki api qovluqu static data saxlamaq ucundur, meselen selectin 
+optionlarini key yazaraq obyekt kimi burada saxlayib sehifenin bir nece yerinde 
+isletmek olar.Biz bildiyimiz api deyil bu.
+
+pages icerisinde ki index.js bizim index.html hissemizdi, home page buradir.
 
 
+Dinamik sehifeler ucun id bele qoyulur:
+
+Consider the following page pages/post/[pid].js:
+
+pid js ici bele olur:
+
+<script>
+    import { useRouter } from 'next/router'
+
+    const Post = () => {
+    const router = useRouter()
+    const { pid } = router.query
+
+    return <p>Post: {pid}</p>
+    }
+
+    export default Post
+</script>
 https://nextjs.org/docs/basic-features/pages
+
+https://nextjs.org/docs/routing/introduction
+
+- useRouteri alidqdan sonra router.push('/') yazmaq sehifeni redirect edir
+
+- Eger nece dinamik parametr geleceyini bilmirsense [...all].js yazirsan.Amma bu ve id eyni
+yerde varsa birinci id isleyir.
+
+router.query.all ile butun qalan parametrleri array seklinde aliriq 
+
+3) Data cekme - 
+
+Data 2 fromada cekiler, bir var dinamik meselen id olur routede, bir de var static 
+pageler ucun.Her biri ucun ayri bir usul istifade olunur.Statik yeni about pagedir ve 
+bu page her hansi id den asili olaraq deyismir.Dinamik olanda server side request atilir.
+
+
+getStaticProps - static olanlar ucun.
+
+Burada Blog sehifesi ucun posts propsunu bele qaytaririq.Burada sorgu fetch ile yazilib,
+amma esline axios ile yazilmalidir.
+
+<script>
+    // posts will be populated at build time by getStaticProps()
+function Blog(props) {
+
+  const {posts} = props;
+
+  return (
+    <ul>
+      {posts.map((post) => (
+        <li>{post.title}</li>
+      ))}
+    </ul>
+  )
+}
+
+// This function gets called at build time on server-side.
+// It won't be called on client-side, so you can even do
+// direct database queries.
+export async function getStaticProps() {
+  // Call an external API endpoint to get posts.
+  // You can use any data fetching library
+  const res = await fetch('https://.../posts')
+  const posts = await res.json()
+
+  // By returning { props: { posts } }, the Blog component
+  // will receive `posts` as a prop at build time
+  return {
+    props: {
+      posts,
+    },
+  }
+}
+
+export default Blog
+</script>
+
+- getServerSideProps - 
+
+Bu id olan sehifeler ucundur, next JS her request olduqda re-render edir sehifeni
+
+https://nextjs.org/docs/basic-features/data-fetching/get-static-props
+
+4) Module css - 
+
+burada css her bir sehifeye ayrica import olur, lazim olmayan yerde gelmir.
+
+5) useRouter() - 
+
+router.query 
+router.locale
+
+6) Next Image tagi - 
+
+loaderi bele var ki sekil acilana kimi isledir 
+
+<script>
+    import Image from 'next/image'
+
+  const myLoader = () => {
+    return `https://media2.giphy.com/media/3oEjI6SIIHBdRxXI40/200w.gif?cid=6c09b952h4umlb33ggp8zsuvekefh4l3yuphhf1fvsoqq549&rid=200w.gif&ct=g`
+  }
+
+const MyImage = (props) => {
+  return (
+    <Image
+      loader={myLoader}
+      src="me.png"
+      alt="Picture of the author"
+      width={500}
+      height={500}
+    />
+  )
+}
+</script>
+
+bundan elave next.config.js faylina sekili aldigin domain adi elave olunmalidir
+Eger islemese loaderi poz.Loader itmir hele.
+
+<script>
+  const nextConfig = {
+  reactStrictMode: true,
+  images: {
+    domains: ['reqres.in', 'media2.giphy.com'],
+  }
+}
+</script>
+
+https://nextjs.org/docs/basic-features/image-optimization
+
+https://nextjs.org/docs/api-reference/next/image
+
+7) 
